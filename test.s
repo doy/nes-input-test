@@ -51,8 +51,53 @@ vblankwait2:      ; Second wait for vblank, PPU is ready after this
   LDA #%10000000   ;intensify blues
   STA $2001
 
-Forever:
-  JMP Forever     ;jump back to Forever, infinite loop
+  LDX #$00
+
+read_controller1:
+  ; latch
+  LDA #$01
+  STA $4016
+  LDA #$00
+  STA $4016
+
+  ; clock
+  LDA $4016 ; A
+  AND #%00000001
+  TAY
+  LDA $4016 ; B
+  LDA $4016 ; Select
+  LDA $4016 ; Start
+  LDA $4016 ; Up
+  LDA $4016 ; Down
+  LDA $4016 ; Left
+  LDA $4016 ; Right
+
+  CPY #$00
+  BEQ read_controller1
+
+  CPX #$00
+  BEQ turn_green
+  CPX #$01
+  BEQ turn_red
+
+turn_blue:
+  LDA #%10000000
+  STA $2001
+  LDX #$00
+  JMP read_controller1
+
+turn_green:
+  LDA #%01000000
+  STA $2001
+  LDX #$01
+  JMP read_controller1
+
+turn_red:
+  LDA #%00100000
+  STA $2001
+  LDX #$02
+  JMP read_controller1
+
 
 NMI:
   RTI
