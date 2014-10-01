@@ -18,6 +18,9 @@ $(NAME).rom: $(OBJS) linkfile
 %.o: %.s
 	@$(CC) $(CFLAGS) -o $<
 
+run: $(NAME).nes
+	fceux $(NAME).nes
+
 clean:
 	@rm -f $(OBJS) $(NAME).rom $(NAME).nes
 
