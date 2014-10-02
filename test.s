@@ -52,42 +52,10 @@ vblankwait2:      ; Second wait for vblank, PPU is ready after this
   LDA #%10000000   ;intensify blues
   STA $2001
 
+  LDA #%10000000   ; enable NMI interrupts
+  STA $2000
+
 loop:
-  ; read the controller state
-  JSR read_controller1
-
-  ; if A is not pressed, return
-  LDA buttons_pressed.w
-  AND #%10000000
-  CMP #$00
-  BEQ loop
-
-  LDY current_state.w
-  CPY #$00
-  BEQ turn_green
-  CPY #$01
-  BEQ turn_red
-
-turn_blue:
-  LDA #%10000000
-  STA $2001
-  LDA #$00
-  STA current_state.w
-  JMP color_set
-turn_green:
-  LDA #%01000000
-  STA $2001
-  LDA #$01
-  STA current_state.w
-  JMP color_set
-turn_red:
-  LDA #%00100000
-  STA $2001
-  LDA #$02
-  STA current_state.w
-  JMP color_set
-
-color_set:
   JMP loop
 
 read_controller1:
@@ -114,8 +82,53 @@ read_controller1_values:
 end_read_controller1:
   RTS
 
+turn_blue:
+  LDA #%10000000
+  STA $2001
+  LDA #$00
+  STA current_state.w
+  RTS
+
+turn_green:
+  LDA #%01000000
+  STA $2001
+  LDA #$01
+  STA current_state.w
+  RTS
+
+turn_red:
+  LDA #%00100000
+  STA $2001
+  LDA #$02
+  STA current_state.w
+  RTS
 
 NMI:
+  JSR read_controller1
+
+  ; if A is not pressed, return
+  LDA buttons_pressed.w
+  AND #%10000000
+  CMP #$00
+  BEQ loop
+
+  LDY current_state.w
+  CPY #$00
+  BEQ call_turn_green
+  CPY #$01
+  BEQ call_turn_red
+
+call_turn_blue:
+  JSR turn_blue
+  JMP color_set
+call_turn_green:
+  JSR turn_green
+  JMP color_set
+call_turn_red:
+  JSR turn_red
+  JMP color_set
+
+color_set:
   RTI
 
 
