@@ -125,22 +125,51 @@ turn_red:
 NMI:
   JSR read_controller1
 
+  LDA sprite_y.w
+  STA $0200 ; y position
+  LDA #$32
+  STA $0201 ; set the sprite number to display
+  LDA #$00
+  STA $0202 ; set the sprite attributes (palette, flipping, etc)
+  LDA sprite_x.w
+  STA $0203 ; x position
+
+  LDA sprite_y.w
+  STA $0204 ; y position
+  LDA #$33
+  STA $0205 ; set the sprite number to display
+  LDA #$00
+  STA $0206 ; set the sprite attributes (palette, flipping, etc)
+  LDA sprite_x.w
+  ADC #$07  ; XXX why is this #$07 instead of #$08?
+  STA $0207 ; x position
+
+  LDA sprite_y.w
+  ADC #$08
+  STA $0208 ; y position
+  LDA #$34
+  STA $0209 ; set the sprite number to display
+  LDA #$00
+  STA $020A ; set the sprite attributes (palette, flipping, etc)
+  LDA sprite_x.w
+  STA $020B ; x position
+
+  LDA sprite_y.w
+  ADC #$08
+  STA $020C ; y position
+  LDA #$35
+  STA $020D ; set the sprite number to display
+  LDA #$00
+  STA $020E ; set the sprite attributes (palette, flipping, etc)
+  LDA sprite_x.w
+  ADC #$08
+  STA $020F ; x position
+
   ; load the sprite into the ppu ports (from $0200)
   LDA #$00
   STA $2003
   LDA #$02
   STA $4014
-
-  LDA sprite_x.w
-  STA $0203 ; x position
-  LDA sprite_y.w
-  STA $0200 ; y position
-
-  LDA #$00
-  STA $0201 ; set the sprite number to display
-
-  LDA #$00
-  STA $0202 ; set the sprite attributes (palette, flipping, etc)
 
 handle_up:
   LDA buttons_pressed.w
