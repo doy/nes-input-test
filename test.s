@@ -127,9 +127,10 @@ NMI:
   LDA #$02
   STA $4014
 
-  LDA #$80
-  STA $0200 ; x position
-  STA $0203 ; y position
+  LDA sprite_x.w
+  STA $0203 ; x position
+  LDA sprite_y.w
+  STA $0200 ; y position
 
   LDA #$00
   STA $0201 ; set the sprite number to display
@@ -137,11 +138,47 @@ NMI:
   LDA #$00
   STA $0202 ; set the sprite attributes (palette, flipping, etc)
 
-  ; if A is not pressed, return
+handle_up:
+  LDA buttons_pressed.w
+  AND #%00001000
+  CMP #$00
+  BEQ handle_down
+  LDY sprite_y.w
+  DEY
+  STY sprite_y.w
+
+handle_down:
+  LDA buttons_pressed.w
+  AND #%00000100
+  CMP #$00
+  BEQ handle_left
+  LDY sprite_y.w
+  INY
+  STY sprite_y.w
+
+handle_left:
+  LDA buttons_pressed.w
+  AND #%00000010
+  CMP #$00
+  BEQ handle_right
+  LDY sprite_x.w
+  DEY
+  STY sprite_x.w
+
+handle_right:
+  LDA buttons_pressed.w
+  AND #%00000001
+  CMP #$00
+  BEQ handle_a
+  LDY sprite_x.w
+  INY
+  STY sprite_x.w
+
+handle_a:
   LDA buttons_pressed.w
   AND #%10000000
   CMP #$00
-  BEQ loop
+  BEQ nmi_return
 
   LDY current_state.w
   CPY #$00
@@ -151,15 +188,15 @@ NMI:
 
 call_turn_blue:
   JSR turn_blue
-  JMP color_set
+  JMP nmi_return
 call_turn_green:
   JSR turn_green
-  JMP color_set
+  JMP nmi_return
 call_turn_red:
   JSR turn_red
-  JMP color_set
+  JMP nmi_return
 
-color_set:
+nmi_return:
   RTI
 
 
@@ -181,6 +218,8 @@ palette:
   .org $0000
 buttons_pressed: .ds 1, $00
 current_state:   .ds 1, $00
+sprite_x:        .ds 1, $80
+sprite_y:        .ds 1, $80
 
 
   .bank 2 slot 3
