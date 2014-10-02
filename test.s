@@ -1,14 +1,15 @@
 .MEMORYMAP
 SLOTSIZE     $2000
 DEFAULTSLOT  0
-SLOT 0       $C000
+SLOT 0       $8000
 SLOT 1       $E000
+SLOT 2       $0000
 .ENDME
 
 .ROMBANKMAP
-BANKSTOTAL  2
+BANKSTOTAL  3
 BANKSIZE    $2000
-BANKS       2
+BANKS       3
 .ENDRO
 
 
@@ -51,7 +52,43 @@ vblankwait2:      ; Second wait for vblank, PPU is ready after this
   LDA #%10000000   ;intensify blues
   STA $2001
 
+loop:
+  ; read the controller state
+  JSR read_controller1
+
+  ; if A is not pressed, return
   LDX #$00
+  LDA buttons_pressed.w, X
+  CMP #$00
+  BEQ loop
+
+  LDY current_state.w
+  CPY #$00
+  BEQ turn_green
+  CPY #$01
+  BEQ turn_red
+
+turn_blue:
+  LDA #%10000000
+  STA $2001
+  LDA #$00
+  STA current_state.w
+  JMP color_set
+turn_green:
+  LDA #%01000000
+  STA $2001
+  LDA #$01
+  STA current_state.w
+  JMP color_set
+turn_red:
+  LDA #%00100000
+  STA $2001
+  LDA #$02
+  STA current_state.w
+  JMP color_set
+
+color_set:
+  JMP loop
 
 read_controller1:
   ; latch
@@ -61,42 +98,19 @@ read_controller1:
   STA $4016
 
   ; clock
-  LDA $4016 ; A
-  AND #%00000001
-  TAY
-  LDA $4016 ; B
-  LDA $4016 ; Select
-  LDA $4016 ; Start
-  LDA $4016 ; Up
-  LDA $4016 ; Down
-  LDA $4016 ; Left
-  LDA $4016 ; Right
-
-  CPY #$00
-  BEQ read_controller1
-
-  CPX #$00
-  BEQ turn_green
-  CPX #$01
-  BEQ turn_red
-
-turn_blue:
-  LDA #%10000000
-  STA $2001
   LDX #$00
-  JMP read_controller1
+read_controller1_values:
+  CPX #$07
+  BPL end_read_controller1
 
-turn_green:
-  LDA #%01000000
-  STA $2001
-  LDX #$01
-  JMP read_controller1
+  LDA $4016
+  AND #%00000001
+  STA buttons_pressed.w, X
+  INX
+  JMP read_controller1_values
 
-turn_red:
-  LDA #%00100000
-  STA $2001
-  LDX #$02
-  JMP read_controller1
+end_read_controller1:
+  RTS
 
 
 NMI:
@@ -110,3 +124,9 @@ NMI:
   .dw RESET      ;when the processor first turns on or is reset, it will jump
                    ;to the label RESET:
   .dw 0          ;external interrupt IRQ is not used in this tutorial
+
+
+  .bank 2 slot 2
+  .org $0000
+buttons_pressed: .ds 8, $00
+current_state:   .ds 1, $00
