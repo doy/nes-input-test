@@ -121,18 +121,21 @@ turn_red:
 NMI:
   JSR read_controller1
 
+  ; load the sprite into the ppu ports (from $0200)
   LDA #$00
   STA $2003
   LDA #$02
   STA $4014
 
   LDA #$80
-  STA $0200
-  STA $0203
+  STA $0200 ; x position
+  STA $0203 ; y position
+
   LDA #$00
-  STA $0201
+  STA $0201 ; set the sprite number to display
+
   LDA #$00
-  STA $0202
+  STA $0202 ; set the sprite attributes (palette, flipping, etc)
 
   ; if A is not pressed, return
   LDA buttons_pressed.w
