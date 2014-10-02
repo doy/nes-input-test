@@ -64,6 +64,10 @@ LoadPalettesLoop:
   CPX #$20            
   BNE LoadPalettesLoop  ;if x = $20, 32 bytes copied, all done
 
+  LDA #$80
+  STA sprite_x.w
+  STA sprite_y.w
+
   LDA #%10010000   ;intensify blues and enable sprites
   STA $2001
 
