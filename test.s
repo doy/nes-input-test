@@ -100,7 +100,7 @@ read_controller1:
   ; clock
   LDX #$00
 read_controller1_values:
-  CPX #$07
+  CPX #$08
   BPL end_read_controller1
 
   LDA $4016
