@@ -7,9 +7,9 @@ SLOT 2       $6000
 .ENDME
 
 .ROMBANKMAP
-BANKSTOTAL  3
+BANKSTOTAL  2
 BANKSIZE    $2000
-BANKS       3
+BANKS       2
 .ENDRO
 
 
@@ -141,7 +141,7 @@ color_set:
   .dw 0          ;external interrupt IRQ is not used in this tutorial
 
 
-  .bank 2 slot 2
+  .bank 1 slot 2
   .org $0000
 buttons_pressed: .ds 1, $00
 current_state:   .ds 1, $00
