@@ -64,6 +64,9 @@ LoadPalettesLoop:
   CPX #$20            
   BNE LoadPalettesLoop  ;if x = $20, 32 bytes copied, all done
 
+  ; XXX not sure why this isn't happening automatically
+  ; it looks like the data values are being initialized at $2000 rather than
+  ; $6000 maybe?
   LDA #$80
   STA sprite_x.w
   STA sprite_y.w
