@@ -71,7 +71,7 @@ LoadPalettesLoop:
   STA sprite_x.w
   STA sprite_y.w
 
-  LDA #%10010000   ;intensify blues and enable sprites
+  LDA #%00010000   ; enable sprites
   STA $2001
 
   LDA #%10000000   ; enable NMI interrupts
