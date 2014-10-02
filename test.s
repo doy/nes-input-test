@@ -57,8 +57,8 @@ loop:
   JSR read_controller1
 
   ; if A is not pressed, return
-  LDX #$00
-  LDA buttons_pressed.w, X
+  LDA buttons_pressed.w
+  AND #%10000000
   CMP #$00
   BEQ loop
 
@@ -105,7 +105,9 @@ read_controller1_values:
 
   LDA $4016
   AND #%00000001
-  STA buttons_pressed.w, X
+  ASL buttons_pressed.w
+  ORA buttons_pressed.w
+  STA buttons_pressed.w
   INX
   JMP read_controller1_values
 
@@ -128,5 +130,5 @@ NMI:
 
   .bank 2 slot 2
   .org $0000
-buttons_pressed: .ds 8, $00
+buttons_pressed: .ds 1, $00
 current_state:   .ds 1, $00
