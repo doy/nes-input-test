@@ -75,11 +75,11 @@ LoadPalettesLoop:
 
   ; initialize variables in ram
   LDA #$00
-  STA buttons_pressed.w
-  STA current_state.w
+  STA buttons_pressed
+  STA current_state
   LDA #$80
-  STA sprite_x.w
-  STA sprite_y.w
+  STA sprite_x
+  STA sprite_y
 
   LDA #$32
   STA $0201 ; set the sprite number to display
@@ -125,9 +125,9 @@ read_controller1_values:
 
   LDA $4016
   AND #%00000001
-  ASL buttons_pressed.w
-  ORA buttons_pressed.w
-  STA buttons_pressed.w
+  ASL buttons_pressed
+  ORA buttons_pressed
+  STA buttons_pressed
   INX
   JMP read_controller1_values
 
@@ -138,69 +138,69 @@ turn_blue:
   LDA #%10010000
   STA $2001
   LDA #$00
-  STA current_state.w
+  STA current_state
   RTS
 
 turn_green:
   LDA #%01010000
   STA $2001
   LDA #$01
-  STA current_state.w
+  STA current_state
   RTS
 
 turn_red:
   LDA #%00110000
   STA $2001
   LDA #$02
-  STA current_state.w
+  STA current_state
   RTS
 
 NMI:
   JSR read_controller1
 
 handle_up:
-  LDA buttons_pressed.w
+  LDA buttons_pressed
   AND #%00001000
   CMP #$00
   BEQ handle_down
-  LDY sprite_y.w
+  LDY sprite_y
   DEY
-  STY sprite_y.w
+  STY sprite_y
 
 handle_down:
-  LDA buttons_pressed.w
+  LDA buttons_pressed
   AND #%00000100
   CMP #$00
   BEQ handle_left
-  LDY sprite_y.w
+  LDY sprite_y
   INY
-  STY sprite_y.w
+  STY sprite_y
 
 handle_left:
-  LDA buttons_pressed.w
+  LDA buttons_pressed
   AND #%00000010
   CMP #$00
   BEQ handle_right
-  LDY sprite_x.w
+  LDY sprite_x
   DEY
-  STY sprite_x.w
+  STY sprite_x
 
 handle_right:
-  LDA buttons_pressed.w
+  LDA buttons_pressed
   AND #%00000001
   CMP #$00
   BEQ handle_a
-  LDY sprite_x.w
+  LDY sprite_x
   INY
-  STY sprite_x.w
+  STY sprite_x
 
 handle_a:
-  LDA buttons_pressed.w
+  LDA buttons_pressed
   AND #%10000000
   CMP #$00
   BEQ nmi_return
 
-  LDY current_state.w
+  LDY current_state
   CPY #$00
   BEQ call_turn_green
   CPY #$01
@@ -218,27 +218,27 @@ call_turn_red:
 
 nmi_return:
   ; update the sprite locations
-  LDA sprite_y.w
+  LDA sprite_y
   STA $0200
-  LDA sprite_x.w
+  LDA sprite_x
   STA $0203
 
-  LDA sprite_y.w
+  LDA sprite_y
   STA $0204
-  LDA sprite_x.w
+  LDA sprite_x
   ADC #$07 ; XXX why is this #$07 instead of #$08?
   STA $0207
 
-  LDA sprite_y.w
+  LDA sprite_y
   ADC #$08
   STA $0208
-  LDA sprite_x.w
+  LDA sprite_x
   STA $020B
 
-  LDA sprite_y.w
+  LDA sprite_y
   ADC #$08
   STA $020C
-  LDA sprite_x.w
+  LDA sprite_x
   ADC #$08
   STA $020F
 
