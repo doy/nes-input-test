@@ -1,15 +1,17 @@
 .MEMORYMAP
-SLOTSIZE     $2000
 DEFAULTSLOT  0
+SLOTSIZE     $4000
 SLOT 0       $C000
-SLOT 1       $E000
-SLOT 2       $0000
+SLOTSIZE     $2000
+SLOT 1       $0000 ; location doesn't matter, CHR data isn't in main memory
 .ENDME
 
 .ROMBANKMAP
-BANKSTOTAL  3
+BANKSTOTAL  2
+BANKSIZE    $4000
+BANKS       1
 BANKSIZE    $2000
-BANKS       3
+BANKS       1
 .ENDRO
 
 
@@ -21,7 +23,7 @@ sprite_y        DB
   .ende
 
 
-  .bank 0 slot 0
+  .bank 0
   .org $0000
 RESET:
   SEI          ; disable IRQs
@@ -248,9 +250,6 @@ nmi_return:
 
   RTI
 
-
-  .bank 1 slot 1
-  .org $0000
 palette:
   .db $0F,$31,$32,$33,$0F,$35,$36,$37,$0F,$39,$3A,$3B,$0F,$3D,$3E,$0F
   .db $0F,$1C,$15,$14,$0F,$02,$38,$3C,$0F,$1C,$15,$14,$0F,$02,$38,$3C
@@ -263,6 +262,6 @@ palette:
   .dw 0          ;external interrupt IRQ is not used in this tutorial
 
 
-  .bank 2 slot 2
+  .bank 1 slot 1
   .org $0000
   .incbin "mario.chr"
