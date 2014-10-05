@@ -13,7 +13,7 @@ BANKS       3
 .ENDRO
 
 
-  .enum $0700
+  .enum $0000
 buttons_pressed DB
 current_state   DB
 sprite_x        DB
