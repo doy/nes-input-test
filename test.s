@@ -1,10 +1,9 @@
 .MEMORYMAP
 SLOTSIZE     $2000
 DEFAULTSLOT  0
-SLOT 0       $8000
+SLOT 0       $C000
 SLOT 1       $E000
-SLOT 2       $6000
-SLOT 3       $0000
+SLOT 2       $0000
 .ENDME
 
 .ROMBANKMAP
@@ -14,7 +13,15 @@ BANKS       3
 .ENDRO
 
 
-  .bank 0
+  .enum $0700
+buttons_pressed DB
+current_state   DB
+sprite_x        DB
+sprite_y        DB
+  .ende
+
+
+  .bank 0 slot 0
   .org $0000
 RESET:
   SEI          ; disable IRQs
@@ -64,9 +71,10 @@ LoadPalettesLoop:
   CPX #$20            
   BNE LoadPalettesLoop  ;if x = $20, 32 bytes copied, all done
 
-  ; XXX not sure why this isn't happening automatically
-  ; it looks like the data values are being initialized at $2000 rather than
-  ; $6000 maybe?
+  ; initialize variables in ram
+  LDA #$00
+  STA buttons_pressed.w
+  STA current_state.w
   LDA #$80
   STA sprite_x.w
   STA sprite_y.w
@@ -242,7 +250,7 @@ nmi_return:
 
 
   .bank 1 slot 1
-  .orga $E000
+  .org $0000
 palette:
   .db $0F,$31,$32,$33,$0F,$35,$36,$37,$0F,$39,$3A,$3B,$0F,$3D,$3E,$0F
   .db $0F,$1C,$15,$14,$0F,$02,$38,$3C,$0F,$1C,$15,$14,$0F,$02,$38,$3C
@@ -255,14 +263,6 @@ palette:
   .dw 0          ;external interrupt IRQ is not used in this tutorial
 
 
-  .bank 1 slot 2
-  .org $0000
-buttons_pressed: .ds 1, $00
-current_state:   .ds 1, $00
-sprite_x:        .ds 1, $80
-sprite_y:        .ds 1, $80
-
-
-  .bank 2 slot 3
+  .bank 2 slot 2
   .org $0000
   .incbin "mario.chr"
